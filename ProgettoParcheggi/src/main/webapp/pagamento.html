@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pagamento</title>
+    <style>
+    body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .title {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .price-input {
+            width: 200px;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        
+        .pay-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: green;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .pay-button:hover {
+            background-color: darkgreen;
+        }
+        
+        h3 {
+           color: #333;
+           text-align: center;
+           margin-top: 20px;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h3>CASSA</h3>
+        <h3>Inserisci numero ticket che vuoi pagare:</h3>
+        <input type="number" id="price-input" class="price-input" placeholder="Numero Ticket">
+        <div class="amount-label">
+            <span>Importo da pagare:</span>
+            <span>7 EURO</span>
+        </div>
+        <br>
+        <button id="pay-button" class="pay-button">PAGA</button>
+    </div>
+    
+     <script>
+     
+     function pagaParcheggio(id) {
+         // Creazione di un oggetto JSON con i dati da inviare
+         var objPaga = {
+           id: id
+         };
+         // Invio della richiesta POST al server
+         fetch('/pagamento', {
+           method: 'POST',
+           headers: {
+             'Content-Type': 'application/json'
+           },
+           body: JSON.stringify(objPaga)
+         })
+         .then(function(response) {
+       
+         })
+         .catch(function(error) {
+           // Gestione degli errori
+           console.error('Errore durante l\'invio della richiesta:', error);
+         });
+       }
+     
+   
+        document.getElementById("pay-button").addEventListener("click", function() {
+            var priceInput = document.getElementById("price-input");
+            var codiceString = priceInput.value;
+            var codice = parseInt(codiceString);
+
+            // Verifica se la conversione e' avvenuta correttamente
+            if (!isNaN(codice)) {
+                pagaParcheggio(codice);
+                alert("Hai pagato il ticket numero: " + codice);
+                //window.location.href = "/areaUtente";
+                window.location.replace('/areaUtente');
+            } else {
+                alert("Il codice non  un numero valido.");
+            }
+            
+            
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Area Utente</title>
+  
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f2f2f2;
+      }
+
+      h3 {
+        color: #333;
+        text-align: center;
+        margin-top: 20px;
+      }
+
+      table {
+        border-collapse: collapse;
+        width: 90%;
+        margin: 20px auto;
+        background-color: #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+
+      th {
+        background-color: #f2f2f2;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 16px;
+        text-align: center;
+        cursor: pointer;
+        text-decoration: none;
+        border: none;
+        border-radius: 4px;
+        background-color: #4CAF50;
+        color: #fff;
+        transition: background-color 0.3s;
+      }
+
+      .btn:hover {
+        background-color: #45a049;
+      }
+
+      #dialog {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 20px;
+        background-color: #f5f5f5;
+        border: 1px solid #ccc;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      .dialog-label {
+        font-weight: bold;
+      }
+
+      .dialog-input {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+        box-sizing: border-box;
+      }
+
+      .dialog-button {
+        padding: 10px 20px;
+        font-size: 16px;
+        text-align: center;
+        cursor: pointer;
+        text-decoration: none;
+        border: none;
+        border-radius: 4px;
+        background-color: #4CAF50;
+        color: #fff;
+        transition: background-color 0.3s;
+      }
+
+      .dialog-button:hover {
+        background-color: #45a049;
+      }
+      
+      #idParcheggio {
+      display: none;
+    }
+    
+    
+      .center-button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 10vh;
+    }
+
+  </style>
+  
+  <script>
+    //funzione per fare aprire dialog quando si clicca su esci
+    function apriDialog(id) {
+      var dialog = document.getElementById("dialog");
+      dialog.style.display = "block";
+      
+      //rendo invisibile idParcheggio perchè non è il suo id ma la sua posizione
+      var idParcheggioElement = document.getElementById('idParcheggio');
+      idParcheggioElement.textContent = 'ID Parcheggio: ' + id;
+    }
+
+    function chiudiDialog() {
+    	  var dialog = document.getElementById("dialog");
+    	  dialog.style.display = "none";
+    	}
+
+    
+    function confermaUscita() {
+      var ticket = parseInt(document.getElementById("ticket").value, 10);
+      
+      var idParcheggioElement = document.getElementById('idParcheggio');
+      var idParcheggioText = idParcheggioElement.textContent;
+
+      // Rimuovo lo stile display: none per ottenere il valore di idParcheggio
+      idParcheggioElement.style.display = "inline";
+      var idParcheggio = idParcheggioText.split(":")[1].trim(); // Estrai solo l'ID
+
+      // Rimuovo lo stile display: none per nascondere nuovamente l'elemento idParcheggio, che non voglio si veda
+      idParcheggioElement.style.display = "none";
+      
+      
+        //idParcheggio in realtà è la sua posizione, da questa poi si trova l'id
+        var obj = {
+    	    idParcheggio : idParcheggio,
+          ticket : ticket
+        };
+        // Invio della richiesta POST al server
+        fetch('/uscitaParcheggio', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(obj)
+        })
+        .then(function(response) {
+          
+        })
+        .catch(function(error) {
+          // Gestione degli errori
+          console.error('Errore durante l\'invio della richiesta:', error);
+        });
+     
+        // Chiudi il dialog
+        var dialog = document.getElementById("dialog");
+        dialog.style.display = "none";
+        location.reload();
+        alert("Se hai pagato il ticket relativo al tuo parcheggio si apriranno le transenne!");
+     
+    }
+  
+   
+    function entraParcheggio(id, numTicket) {
+        // Creazione di un oggetto JSON con i dati da inviare
+        var objEntra = {
+          id: id,
+          numTicket : numTicket
+        };
+        // Invio della richiesta POST al server
+        fetch('/areaUtente', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(objEntra)
+        })
+        .then(function(response) {
+         
+        })
+        .catch(function(error) {
+          // Gestione degli errori
+          console.error('Errore durante l\'invio della richiesta:', error);
+        });
+      }
+    
+    //per generare valore ticket
+    function generateUniqueId() {
+    	  const timestamp = Date.now();
+    	  return parseInt(timestamp, 10);
+    }
+
+    	
+    
+    //gestione click su entra
+    document.addEventListener("click", function(event) {
+      var target = event.target;
+      if (target.tagName === "BUTTON" && target.name === "entraBtn") {
+        var buttonId = target.id;
+        var itemId = buttonId.split("_")[1]; // Ottieni l'ID dell'elemento correlato al bottone
+    	  var uniqueId = generateUniqueId();
+        entraParcheggio(itemId, uniqueId);
+        alert("TRANSENNE APERTE, NUMERO TICKET DA USARE PER IL PAGAMENTO: "+ uniqueId);
+        location.reload();  
+      } 
+    });
+    
+    
+    //gestione click su esci
+    document.addEventListener("click", function(event) {
+      var target = event.target;
+      if (target.tagName === "BUTTON" && target.name === "esciBtn") {
+        var buttonId = target.id;
+        var itemId = buttonId.split("_")[1]; // Ottieni l'ID dell'elemento correlato al bottone
+        var numTicket = Math.floor(Math.random() * (2000 - 0 + 1)) + 0;
+        apriDialog(itemId);
+        
+      } 
+    });
+    
+ 
+    
+   
+
+  </script>
+</head>
+<body>
+    <h3>ELENCO PARCHEGGI</h3>
+    <table>
+      {{DYNAMIC_CONTENT}}
+    </table>
+    
+      <h3>Prima di uscire paga qui il tuo ticket:</h3>
+      <div class="center-button">
+  		<button class="btn btn-success" onclick="window.location.replace('/pagamento');">PAGAMENTO</button>
+	  </div>
+
+
+	
+	  
+	  <div id="dialog">
+		  <button id="closeBtn" onclick="chiudiDialog()" type="submit">&times;</button>
+		  <h2>Conferma Uscita</h2>
+		  <label for="ticket">Ticket:</label>
+		  <input type="text" id="ticket" name="ticket">
+		  <span id="idParcheggio"></span>
+		  <br><br>
+		  <button onclick="confermaUscita()">Conferma Uscita</button>
+	  </div>
+	  
+</div>
+</body>
+</html>

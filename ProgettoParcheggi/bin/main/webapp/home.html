@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>home</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: Arial, sans-serif;
+	    background-color: #f2f2f2;
+    }
+
+    h1 {
+      margin-top: 50px;
+    }
+
+    .btnAmm {
+      margin-top: 20px;
+      background-color : red;
+      padding: 10px 20px;
+      font-size: 18px;
+    }
+
+    .btn {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 18px;
+      background-color: green;
+      color: white;
+    }
+
+    h3 {
+      color: #333;
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
+  <script>
+    
+    function signIn() {
+      let oauth2Endpoint = "https://accounts.google.com/o/oauth2/v2/auth"
+
+      let form= document.createElement('form')
+      form.setAttribute('method','GET')
+      form.setAttribute('action',oauth2Endpoint)
+
+      let params = {
+        "client_id": "656991066380-df6p3b90feiq8sg64fdaivkoqf11j3cg.apps.googleusercontent.com",
+        "redirect_uri":"https://localhost:8443/opzioniAmministratore",
+        "response_type":"token",
+        "scope":"https://www.googleapis.com/auth/userinfo.profile",
+        "include_granted_scopes":'true',
+        'state':'pass-through-value'
+      }
+
+      for(var p in params) {
+        let input = document.createElement('input')
+        input.setAttribute('type', 'hidden')
+        input.setAttribute('name', p)
+        input.setAttribute('value', params[p])
+        form.appendChild(input)
+      }
+
+      document.body.appendChild(form)
+      form.submit()
+
+    }
+    
+   
+
+  </script>
+</head>
+<body>
+  <h3>PROGETTO PARCHEGGI</h3>
+  <button class="btnAmm" type="button" onclick="signIn()">AREA AMMINISTRATORI</button>
+  <button class="btn btn-success" onclick="window.location.href = '/areaUtente';">PARCHEGGI</button>
+</body>
+</html>

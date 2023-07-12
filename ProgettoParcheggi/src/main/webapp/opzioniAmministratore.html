@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<style>
+
+	  body {
+	      font-family: Arial, sans-serif;
+	      background-color: #f2f2f2;
+	  }
+    
+    h3 {
+      color: #333;
+      text-align: center;
+      margin-top: 20px;
+    }
+    
+    .btn {
+      display: inline-block;
+      padding: 10px 20px;
+      font-size: 16px;
+      text-align: center;
+      cursor: pointer;
+      text-decoration: none;
+      border: none;
+      border-radius: 4px;
+      margin-right:5px;
+      background-color: #4CAF50;
+      color: #fff;
+      transition: background-color 0.3s;
+    }
+    
+     .btnDanger {
+      display: inline-block;
+      padding: 10px 20px;
+      font-size: 16px;
+      text-align: center;
+      cursor: pointer;
+      text-decoration: none;
+      border: none;
+      border-radius: 4px;
+      background-color: red;
+      color: #fff;
+      transition: background-color 0.3s;
+    }
+    
+     .button-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    
+
+    .btn:hover {
+      background-color: #45a049;
+    }
+
+
+</style>
+  <title>Lista di possibilita'</title>
+</head>
+<body>
+  <h3 class="pagination justify-content-center">AMMINISTRATORE</h3>
+  <h3 id="name">Benvenuto:</h3>
+  <div class="button-container">
+  <button class="btn btn-success" onclick="window.location.href = '/cambiaAttivitaParcheggi';">Cambia stato parcheggio</button>
+  <button class="btn btn-success" onclick="window.location.href = '/aggiungieliminaParcheggio';">Aggiungi/Elimina parcheggio</button>
+  <button class="btnDanger" onclick="logout()">LOGOUT</button>
+  </div>
+ 
+</body>
+
+<script>
+  //qui catturo le informazioni dell'utente che altrimenti apparirebbero nell'url 
+  let params = {}
+  let regex = /([^&=]+)=([^&]*)/g,m
+  while( m = regex.exec(location.href)) {
+    params[decodeURIComponent(m[1])]= decodeURIComponent(m[2])
+  }
+  if(Object.keys(params).length > 0) {
+    localStorage.setItem('authInfo',JSON.stringify(params))
+  }
+  //nascondo access token, faccio in modo che si veda solo /opzioniAmministratore
+  window.history.pushState({},document.title,"/" + "opzioniAmministratore")
+  
+  
+ 
+  if (!localStorage.getItem('authInfo')) {
+  //Utente non loggato, reindirizzo a pagina home
+  window.location.href = '/'; 
+  } else {
+  let info = JSON.parse(localStorage.getItem('authInfo'))
+  console.log(JSON.parse(localStorage.getItem('authInfo')))
+  console.log(info['access_token'])
+  console.log(info['expires_in'])
+  
+  
+  fetch("https://www.googleapis.com/oauth2/v3/userinfo",{
+	  headers:{
+      "Authorization" : `Bearer ${info['access_token']}`
+      
+	  }
+  })
+  .then((data) => data.json())
+  .then((info) => {
+	  console.log(info)
+    console.log(info.name)
+    document.getElementById('name').innerHTML += info.name
+  })
+
+
+
+  function logout() {
+    fetch("https//oauth2.googleapis.com/revoke?token=" + info['access_token'], {
+      method:'POST',
+      headers: {
+        'Content-type':'application/x-www-form-urlencoded'
+      }
+  })
+  .then((data) =>{
+    	
+    	
+  localStorage.removeItem('authInfo');
+    	
+    	
+  location.href = "https://localhost:8443/"
+  
+  })
+  } 
+  
+}
+</script>
+</html>
